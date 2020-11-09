@@ -1,4 +1,4 @@
-import { ADD, MINUS } from '../constants/counter'
+import { ADD } from '../../constants/home'
 
 const INITIAL_STATE = {
   num: 0
@@ -11,11 +11,6 @@ export default function counter (state = INITIAL_STATE, action) {
         ...state,
         num: state.num + action.num
       }
-     case MINUS:
-       return {
-         ...state,
-         num: state.num - 1
-       }
      default:
        return state
   }
