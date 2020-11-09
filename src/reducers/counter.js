@@ -9,7 +9,7 @@ export default function counter (state = INITIAL_STATE, action) {
     case ADD:
       return {
         ...state,
-        num: state.num + 1
+        num: state.num + action.num
       }
      case MINUS:
        return {
