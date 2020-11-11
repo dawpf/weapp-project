@@ -1,5 +1,110 @@
-view button {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+@import './styles/reset.less';
+
+
+// $default-color: #FF2C94;
+// $default-color-merchant: #518DF5;
+
+.page {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: 100vw;
+	// height: 100vh;
+	background-color: #ffffff;
 }
+
+.flex {
+	display: flex;
+}
+
+.flex1 {
+	flex: 1;
+}
+
+.align-items-center {
+	align-items: center;
+}
+
+.justify-content-center {
+	justify-content: center;
+}
+
+.justify-content-between {
+	justify-content: space-between;
+}
+
+.flex-column {
+	flex-direction: column;
+}
+
+.justify-content-flex-end {
+	justify-content: flex-end;
+}
+
+.justify-content-flex-start {
+	justify-content: flex-start;
+}
+
+.align-items-flex-start {
+	align-items: flex-start;
+}
+
+.align-items-flex-end {
+	align-items: flex-end;
+}
+
+.flex-direction-row {
+	flex-direction: row;
+}
+
+.flex-direction-column {
+	flex-direction: column;
+}
+
+.padding-lr15 {
+	padding: 0 15px;
+}
+
+.margin-lr15 {
+	margin: 0 15px;
+}
+
+.padding15 {
+	padding: 15px;
+}
+
+.bg-color-fff {
+	background-color: #fff;
+}
+
+.ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	&.line2 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		white-space: normal;
+		word-break: break-all;
+		-webkit-line-clamp: 2;
+	}
+	&.line1 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		white-space: normal;
+		word-break: break-all;
+		-webkit-line-clamp: 1;
+	}
+}
+
+.card-box {
+	border-radius: 10px;
+}
+
+
+// view button {
+//   margin: 0;
+//   padding: 0;
+//   list-style: none;
+// }
