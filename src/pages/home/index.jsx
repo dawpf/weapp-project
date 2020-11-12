@@ -43,7 +43,7 @@ class Home extends Component {
     const { data1, data2 } = this.state
     return (
       <View className='home'>
-        <NavBar title='首页1234567898765432' backgroundColor="green"></NavBar>
+        <NavBar title='首页1234567898765432'></NavBar>
         <View>这是index页面：{data1}--{data2}</View>
         <View>{this.props.home.num}</View>
         <View className='btn' onClick={this.addClick.bind(this)}>累加</View>

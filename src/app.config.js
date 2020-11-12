@@ -4,10 +4,10 @@ export default {
     'pages/login/index'
   ],
   window: {
-    backgroundTextStyle: 'light',
+    backgroundTextStyle: 'dark',
     navigationBarBackgroundColor: '#98CB02',
     navigationBarTitleText: 'taro-demo',
-    navigationBarTextStyle: 'white',
+    navigationBarTextStyle: 'black',
     navigationStyle: "custom",
   }
 }

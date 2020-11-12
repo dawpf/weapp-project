@@ -67,6 +67,7 @@ export default class NavBar extends Component {
     })
   }
 
+
   render() {
     const { title, titleStyle, showHome, } = this.props;
 
@@ -74,15 +75,20 @@ export default class NavBar extends Component {
     if (titleStyle === "white") {
       backIcon = backWhiteIcon;
     }
-    let backHome = false;
-    if (Taro.getCurrentPages().length === 1 || showHome) {
-      backIcon = backHomeIcon;
-      if (titleStyle === "white") backIcon = backHomeWhiteIcon;
-      backHome = true;
+    if (Taro.getCurrentPages().length === 1) {
+      backIcon = ''
+      if (showHome) {
+        backIcon = backHomeIcon;
+        if (titleStyle === "white") {
+          backIcon = backHomeWhiteIcon
+        }
+      }
     }
+
     return (
       <View style={this.getNavBarHeight()}>
         <View className='nav_bar_content' style={this.getNavBarStyle()}>
+
           <View className="nav_bar_content_container">
             <Image className='icon_left'
               src={backIcon} onClick={this.onClickBackIcon}
@@ -90,6 +96,7 @@ export default class NavBar extends Component {
             <View className='nav_bar_title ellipsis line1'>
               {title}
             </View>
+
           </View>
         </View>
       </View >
