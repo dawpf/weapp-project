@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { View, Button } from '@tarojs/components'
 import { add } from '@/actions/home'
 
-// import NavBar from '../../components/nav-bar/index'
+import NavBar from '../../components/nav-bar/index'
 
 import './index.less'
 
@@ -43,7 +43,7 @@ class Home extends Component {
     const { data1, data2 } = this.state
     return (
       <View className='home'>
-        {/* <NavBar title='首页111111111'></NavBar> */}
+        <NavBar title='首页1234567898765432' backgroundColor="green"></NavBar>
         <View>这是index页面：{data1}--{data2}</View>
         <View>{this.props.home.num}</View>
         <View className='btn' onClick={this.addClick.bind(this)}>累加</View>

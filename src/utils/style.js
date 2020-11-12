@@ -18,6 +18,7 @@ export function getStatusBarHeight() {
   const info = Taro.getSystemInfoSync();
   const { statusBarHeight, windowWidth } = info;
   return pxTransform(statusBarHeight, windowWidth);
+  // return `${statusBarHeight}px`
 }
 
 /**
@@ -98,7 +99,7 @@ export function mergeStyle(style1, style2) {
   return objectToString(style1) + objectToString(style2);
 }
 
-const objectToString = style => {
+export function objectToString(style) {
   if (style && typeof style === "object") {
     let styleStr = "";
     Object.keys(style).forEach(key => {

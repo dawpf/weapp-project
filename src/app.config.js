@@ -8,6 +8,6 @@ export default {
     navigationBarBackgroundColor: '#98CB02',
     navigationBarTitleText: 'taro-demo',
     navigationBarTextStyle: 'white',
-    // navigationStyle: "custom",
+    navigationStyle: "custom",
   }
 }

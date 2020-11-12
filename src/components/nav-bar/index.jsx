@@ -3,7 +3,7 @@ import Taro from "@tarojs/taro";
 import React, { Component } from 'react'
 import { View, Image, Text, Block } from "@tarojs/components";
 import classNames from "classnames";
-import { getStatusBarHeight, getTitleBarHeight } from "../../utils/style";
+import { getStatusBarHeight, getTitleBarHeight, objectToString } from "../../utils/style";
 
 // 图片资源
 import backBlackIcon from "./assets/ic-back-black.svg";
@@ -48,39 +48,28 @@ export default class NavBar extends Component {
         url: HomePage,
       });
     }
-
   }
 
   getNavBarStyle() {
     const { backgroundColor, backgroundImage, background } = this.props;
-    console.log({
+    return objectToString({
       "height": getTitleBarHeight(),
       "padding-top": getStatusBarHeight(),
       "background-color": backgroundColor,
       "background-image": "url(" + backgroundImage + ")",
       "background": background,
-    });
-    return {
+    })
+  }
+  getNavBarHeight() {
+    return objectToString({
       "height": getTitleBarHeight(),
       "padding-top": getStatusBarHeight(),
-      "background-color": backgroundColor,
-      "background-image": "url(" + backgroundImage + ")",
-      "background": background,
-    };
+    })
   }
 
   render() {
-    const {
-      noPlaceHolder,
-      title,
-      titleStyle,
-      hasBack,
-      customLeft,
-      textStyle,
-      hasBackHome,
-      showHome,
-      hasChildren,
-    } = this.props;
+    const { title, titleStyle, showHome, } = this.props;
+
     let backIcon = backBlackIcon;
     if (titleStyle === "white") {
       backIcon = backWhiteIcon;
@@ -92,14 +81,13 @@ export default class NavBar extends Component {
       backHome = true;
     }
     return (
-      <View className='nav_bar'>
+      <View style={this.getNavBarHeight()}>
         <View className='nav_bar_content' style={this.getNavBarStyle()}>
           <View className="nav_bar_content_container">
-            <Image className='icon_left_back pl11'
+            <Image className='icon_left'
               src={backIcon} onClick={this.onClickBackIcon}
             ></Image>
-
-            <View className='nav_bar_content_center'>
+            <View className='nav_bar_title ellipsis line1'>
               {title}
             </View>
           </View>
@@ -110,17 +98,13 @@ export default class NavBar extends Component {
 }
 
 NavBar.defaultProps = {
-  noPlaceHolder: false,
   title: "",
   backgroundColor: "#fff",
   titleStyle: "black",
-  textStyle: "small",
   hasBack: true,
-  customLeft: false,
-  beforeBackCheck: false,
-  hasBackHome: false,
   showHome: false,
   backgroundImage: '',
+  beforeBackCheck: false,
   onBack: () => {
   },
 };

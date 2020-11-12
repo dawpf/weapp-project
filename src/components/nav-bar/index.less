@@ -1,38 +1,43 @@
-.nav-bar {
+
+.nav_bar_content{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
   position: fixed;
   left: 0;
   top: 0;
   z-index: 999;
 }
 
-.nav_bar_content{
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-
-}
 .nav_bar_content_container{
   width: 100%;
+  height: 100%;
+  flex: 1;
   position: relative;
-  .icon_left_back{
-    width: 22px;
-    height: 22px;
-    display: block;
+  .icon_left{
+    width: 44px;
+    height: 44px;
     position: absolute;
-    left: 9px;
-    top: 15px;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
   }
-  .nav_bar_content_center{
+  .nav_bar_title{
     width: 300px;
-    text-align: center;
     height: 36px;
     line-height: 36px;
     font-size: 36px;
-    margin: 0 auto;
+    text-align: center;
+    height: 36px;
+    line-height: 36px;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    transform: translateX(-50%);
   }
-}
-
-.pl11{
-  padding-left: 11px;
 }
