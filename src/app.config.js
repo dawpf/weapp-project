@@ -5,7 +5,7 @@ export default {
   ],
   window: {
     backgroundTextStyle: 'dark',
-    navigationBarBackgroundColor: '#98CB02',
+    navigationBarBackgroundColor: '#ffffff',
     navigationBarTitleText: 'taro-demo',
     navigationBarTextStyle: 'black',
     navigationStyle: "custom",

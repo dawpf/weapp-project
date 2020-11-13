@@ -5,6 +5,8 @@ import { connect } from 'react-redux'
 import { View, Button } from '@tarojs/components'
 import { add } from '@/actions/home'
 
+import { getAdministrative_division, getSearch } from "../../api/home";
+
 import NavBar from '../../components/nav-bar/index'
 
 import './index.less'
@@ -17,23 +19,41 @@ class Home extends Component {
 
   state = {
     data1: 'home数据1',
-    data2: 'home数据2'
+    data2: 'home数据2',
+    cityData: []
+  }
+
+  async componentDidMount() {
+    try {
+      const payLoad1 = {
+        key: "5551f26eca926b51ac0d81d3ead186d1"
+      }
+      const payLoad2 = {
+        key: "5551f26eca926b51ac0d81d3ead186d1",
+        keywords: '招商银行',
+        city: '上海'
+      }
+      await getAdministrative_division(payLoad1)
+      const res = await getSearch(payLoad2)
+      this.setState({
+        cityData: res.pois
+      })
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   addClick() {
-    console.log('点击了添加');
     this.props.add()
   }
 
   goLogin() {
-    console.log('点击了跳转按钮');
     Taro.navigateTo({
       url: '/pages/login/index?id=2&type=test'
     })
   }
 
   stateClick() {
-    console.log('点击了数据');
     this.setState({
       data1: '改变后的数据'
     })
