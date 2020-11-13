@@ -1,7 +1,5 @@
 import Taro from "@tarojs/taro";
-
 import { base } from "@/utils/index";
-import { formatRequestError } from "@/utils/common";
 
 const HOSTNAME = 'http://restapi.amap.com';
 
@@ -13,7 +11,6 @@ const request = async obj => {
   const header = {
     Authorization: `Bearer ${token}`,
   };
-
 
   const option = {
     url: HOSTNAME + url,
@@ -68,7 +65,6 @@ export default class Http {
             reject(new Error(res.data));
             break;
           default:
-            let error = formatRequestError(res.data.error);
             reject(error);
         }
       } catch (error) {

@@ -307,3 +307,425 @@ getCurrentInstance().router.params
 
 **至此，在 `taro` 中进行路由跳转及参数接收，完成**
 
+### 6 封装请求
+
+新建 `utils/request.js`
+
+```javascript
+import Taro from '@tarojs/taro'
+
+let base = 'http://restapi.amap.com'
+let token = 'token'
+
+function request(params, method = 'GET') {
+  return new Promise((resolve, reject) => {
+    let { url, data } = params
+    let contentType = 'application/x-www-form-urlencoded'
+    contentType = params.contentType || contentType
+    return Taro.request({
+      isShowLoading: false,
+      url: base + url,
+      data: data,
+      method: method,
+      header: { 'content-type': contentType, 'token': token }, // 默认contentType ,预留token
+      success(res) {
+        resolve(res.data)
+      },
+      error(e) {
+        reject(logError('api', '请求接口出现问题', e))
+      }
+    })
+  })
+}
+
+
+export function get(url, data = '') {
+  let option = { url, data }
+  return request(option)
+}
+
+export const post = (url, data, contentType) => {
+  let params = { url, data, contentType }
+  return request(params, 'POST')
+}
+```
+
+新建 `src/utils/http.js`
+
+```javascript
+import Taro from "@tarojs/taro";
+
+import { base } from "@/utils/index";
+
+const HOSTNAME = 'http://restapi.amap.com';
+
+const request = async obj => {
+  const { method, url } = obj;
+  let { data } = obj;
+  const token = '123456789'
+
+  const header = {
+    Authorization: `Bearer ${token}`,
+  };
+
+
+  const option = {
+    url: HOSTNAME + url,
+    data: data,
+    method: method,
+    header: header,
+    success(res) {
+      // 对不同状态的数据进行处理，执行不同的操作
+      // 当 token 过期时，删除本地 token 重新执行
+      if (res.statusCode === 401 && res.data.error.code === 30) {
+        // Taro.removeStorageSync(STORAGE_TOKEN);
+        console.log('删除本地，重新执行');
+        request(obj);
+      } else {
+        obj.success && obj.success(res);
+      }
+    },
+    fail(e) {
+      new Error("网络请求出错");
+    },
+  };
+  Taro.request(option);
+};
+
+export default class Http {
+  async commonHttp(method, url, data) {
+    return new Promise(async (resolve, reject) => {
+      Taro.showNavigationBarLoading();
+      try {
+        const res = await base(request)({
+          method,
+          url,
+          data,
+        });
+        Taro.hideNavigationBarLoading();
+        switch (res.statusCode) {
+          case 200:
+          case 201:
+            return resolve(res.data);
+          case 500:
+            Taro.showToast({
+              title: "服务器发生错误，请检查服务器。",
+              icon: "none",
+            });
+            reject(new Error(res.data.error.message));
+            break;
+          case 503:
+            Taro.showToast({
+              title: "服务不可用，服务器暂时过载或维护。",
+              icon: "none",
+            });
+            reject(new Error(res.data));
+            break;
+          default:
+            reject(error);
+        }
+      } catch (error) {
+        Taro.hideNavigationBarLoading();
+        reject(new Error("网络请求出错"));
+      }
+    });
+  }
+
+  get(url, data) {
+    return this.commonHttp("GET", url, data);
+  }
+
+  post(url, data) {
+    return this.commonHttp("POST", url, data);
+  }
+
+  delete(url, data) {
+    return this.commonHttp("DELETE", url, data);
+  }
+
+  put(url, data) {
+    return this.commonHttp("PUT", url, data);
+  }
+}
+```
+
+自定义的两个函数 `base` 和 `formatRequestError`
+
+```javascript
+/**
+ * 封装 Promise
+ */
+export const base = (request) => (obj) => new Promise((resolve, reject) => {
+  const _object = Object.assign(obj, {
+    success: (res) => resolve(res),
+    fail: (err) => reject(err)
+  });
+  request(_object);
+});
+
+
+```
+
+**至此，一个请求方法封装，完成**
+
+### 7 自定义导航栏
+
+我们可以使用框架提供的默认的导航栏，也可以根据自己的需要开发导航栏组件，步骤如下：
+
+1. 开启自定义导航栏，根目录下 `app.config.js`
+
+   ```javascript
+   export default {
+     pages: [
+       'pages/home/index',
+       'pages/login/index'
+     ],
+     window: {
+       backgroundTextStyle: 'dark',			// 下拉背景字体、loading 图的样式
+       navigationBarBackgroundColor: '#ffffff',// 设置导航栏背景色
+       navigationBarTitleText: 'taro-demo',	// 设置导航栏默认标题
+       navigationBarTextStyle: 'black',		// 设置状态栏字体颜色（信号、电量那些）
+       navigationStyle: "custom",				// 这行代码代表开启自定义导航栏
+     }
+   }
+   
+   // 开启自定义导航栏之后，上面的设置不生效，只有状态栏的字体颜色可以配置，通常设置为 black 
+   ```
+
+2. 新建 `components/nav-bar/index.jsx`
+
+   ```jsx
+   /* eslint-disable react/react-in-jsx-scope */
+   import Taro from "@tarojs/taro";
+   import React, { Component } from 'react'
+   import { View, Image, Text, Block } from "@tarojs/components";
+   import classNames from "classnames";
+   import { getStatusBarHeight, getTitleBarHeight, objectToString } from "../../utils/style";
+   
+   // 图片资源
+   import backBlackIcon from "./assets/ic-back-black.svg";
+   import backWhiteIcon from "./assets/ic-back-white.svg";
+   import backHomeIcon from "./assets/ic-back-home.svg";
+   import backHomeWhiteIcon from "./assets/ic-back-home-white.svg";
+   
+   import "./index.less";
+   
+   const HomePage = '/pages/home/index';
+   
+   export default class NavBar extends Component {
+   
+     componentDidMount() {
+       console.log('getTitleBarHeight()', getTitleBarHeight());
+       console.log('getStatusBarHeight()', getStatusBarHeight());
+     }
+   
+     onClickBackIcon() {
+       const { beforeBackCheck } = this.props;
+       if (beforeBackCheck) {
+         this.props.onBack();
+         return;
+       }
+       if (Taro.getCurrentPages().length > 1) {
+         Taro.navigateBack();
+       } else {
+         Taro.redirectTo({
+           url: HomePage,
+         });
+       }
+     }
+   
+     onClickBackHome() {
+       const pages = Taro.getCurrentPages();
+       if (HomePage.indexOf(pages[0].route) > -1) {
+         Taro.navigateBack({
+           delta: pages.length - 1,
+         });
+       } else {
+         Taro.redirectTo({
+           url: HomePage,
+         });
+       }
+     }
+   
+     getNavBarStyle() {
+       const { backgroundColor, backgroundImage, background } = this.props;
+       return objectToString({
+         "height": getTitleBarHeight(),
+         "padding-top": getStatusBarHeight(),
+         "background-color": backgroundColor,
+         "background-image": "url(" + backgroundImage + ")",
+         "background": background,
+       })
+     }
+     getNavBarHeight() {
+       return objectToString({
+         "height": getTitleBarHeight(),
+         "padding-top": getStatusBarHeight(),
+       })
+     }
+   
+   
+     render() {
+       const { title, titleStyle, showHome, } = this.props;
+   
+       let backIcon = backBlackIcon;
+       if (titleStyle === "white") {
+         backIcon = backWhiteIcon;
+       }
+       if (Taro.getCurrentPages().length === 1) {
+         backIcon = ''
+         if (showHome) {
+           backIcon = backHomeIcon;
+           if (titleStyle === "white") {
+             backIcon = backHomeWhiteIcon
+           }
+         }
+       }
+   
+       return (
+         <View style={this.getNavBarHeight()}>
+           <View className='nav_bar_content' style={this.getNavBarStyle()}>
+   
+             <View className="nav_bar_content_container">
+               <Image className='icon_left'
+                 src={backIcon} onClick={this.onClickBackIcon}
+               ></Image>
+               <View className='nav_bar_title ellipsis line1'>
+                 {title}
+               </View>
+   
+             </View>
+           </View>
+         </View >
+       );
+     }
+   }
+   
+   NavBar.defaultProps = {
+     title: "",
+     backgroundColor: "#fff",
+     titleStyle: "black",
+     hasBack: true,
+     showHome: false,
+     backgroundImage: '',
+     beforeBackCheck: false,
+     onBack: () => {
+     },
+   };
+   
+   ```
+
+3. 新建 `components/nav-bar/index.less`
+
+   ```less
+   .nav_bar_content{
+     width: 100%;
+     display: flex;
+     align-items: center;
+     flex-direction: row;
+     justify-content: center;
+     position: fixed;
+     left: 0;
+     top: 0;
+     z-index: 999;
+   }
+   
+   .nav_bar_content_container{
+     width: 100%;
+     height: 100%;
+     flex: 1;
+     position: relative;
+     .icon_left{
+       width: 44px;
+       height: 44px;
+       position: absolute;
+       left: 20px;
+       top: 0;
+       bottom: 0;
+       margin: auto;
+     }
+     .nav_bar_title{
+       width: 300px;
+       height: 36px;
+       line-height: 36px;
+       font-size: 36px;
+       text-align: center;
+       height: 36px;
+       line-height: 36px;
+       position: absolute;
+       left: 50%;
+       top: 0;
+       bottom: 0;
+       margin: auto;
+       transform: translateX(-50%);
+     }
+   }
+   ```
+
+4. 页面使用
+
+   ```jsx
+   import React, { Component } from 'react'
+   import Taro from '@tarojs/taro'
+   import { connect } from 'react-redux'
+   
+   import { View, Button } from '@tarojs/components'
+   import { add } from '@/actions/home'
+   
+   import NavBar from '../../components/nav-bar/index'
+   
+   import './index.less'
+   
+   @connect(state => ({
+     home: state.home,
+   }), { add })
+   
+   class Home extends Component {
+   
+     state = {
+       data1: 'home数据1',
+       data2: 'home数据2'
+     }
+   
+     addClick() {
+       this.props.add()
+     }
+   
+     goLogin() {
+       Taro.navigateTo({
+         url: '/pages/login/index?id=2&type=test'
+       })
+     }
+   
+     stateClick() {
+       this.setState({
+         data1: '改变后的数据'
+       })
+     }
+   
+     render() {
+       const { data1, data2 } = this.state
+       return (
+         <View className='home'>
+           <NavBar title='首页1234567898765432'></NavBar>
+           <View>这是index页面：{data1}--{data2}</View>
+           <View>{this.props.home.num}</View>
+           <View className='btn' onClick={this.addClick.bind(this)}>累加</View>
+           <View className='btn' onClick={this.goLogin.bind(this)}>跳转login</View>
+           <View className='btn' onClick={this.stateClick.bind(this)}>改变数据</View>
+         </View>
+       )
+     }
+   }
+   
+   export default Home
+   ```
+
+**至此，自定义导航栏开发，完成**
+
+## 项目上传
+
+使用 `微信开发工具` ，右上角 `详情` 里面配置好 `APPID` ，之后就可以点击 右上角 `上传` ，即可把项目文件上传到 `小程序开发平台` 
+
+打开  [小程序管理平台](https://mp.weixin.qq.com/wxamp/wacodepage/getcodepage?token=1805773240&lang=zh_CN) ，左侧  `管理` ，在  `版本管理` 里面就可以把测试版提交审核
+
