@@ -15,7 +15,7 @@ import './index.less'
   home: state.home,
 }), { add })
 
-class Home extends Component {
+class Home extends React.Component {
 
   state = {
     data1: 'home数据1',
@@ -38,6 +38,7 @@ class Home extends Component {
       this.setState({
         cityData: res.pois
       })
+
     } catch (error) {
       console.log(error);
     }

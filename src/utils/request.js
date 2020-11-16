@@ -1,36 +1,92 @@
-import Taro from '@tarojs/taro'
+import Taro from "@tarojs/taro";
+import { base } from "@/utils/index";
 
-let base = 'http://restapi.amap.com'
-let token = 'token'
+const HOSTNAME = 'http://restapi.amap.com';
 
-function request(params, method = 'GET') {
-  return new Promise((resolve, reject) => {
-    let { url, data } = params
-    let contentType = 'application/x-www-form-urlencoded'
-    contentType = params.contentType || contentType
-    return Taro.request({
-      isShowLoading: false,
-      url: base + url,
-      data: data,
-      method: method,
-      header: { 'content-type': contentType, 'token': token }, // 默认contentType ,预留token
-      success(res) {
-        resolve(res.data)
-      },
-      error(e) {
-        reject(logError('api', '请求接口出现问题', e))
+const request = async obj => {
+  const { method, url } = obj;
+  let { data } = obj;
+  const token = '123456789'
+
+  const header = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  const option = {
+    url: HOSTNAME + url,
+    data: data,
+    method: method,
+    header: header,
+    success(res) {
+      // 对不同状态的数据进行处理，执行不同的操作
+      // 当 token 过期时，删除本地 token 重新执行
+      if (res.statusCode === 401 && res.data.error.code === 30) {
+        // Taro.removeStorageSync(STORAGE_TOKEN);
+        console.log('删除本地，重新执行');
+        request(obj);
+      } else {
+        obj.success && obj.success(res);
       }
-    })
-  })
-}
+    },
+    fail(e) {
+      new Error("网络请求出错");
+    },
+  };
+  Taro.request(option);
+};
 
+export default class Http {
+  async commonHttp(method, url, data) {
+    return new Promise(async (resolve, reject) => {
+      Taro.showNavigationBarLoading();
+      try {
+        const res = await base(request)({
+          method,
+          url,
+          data,
+        });
+        Taro.hideNavigationBarLoading();
+        switch (res.statusCode) {
+          case 200:
+          case 201:
+            return resolve(res.data);
+          case 500:
+            Taro.showToast({
+              title: "服务器发生错误，请检查服务器。",
+              icon: "none",
+            });
+            reject(new Error(res.data.error.message));
+            break;
+          case 503:
+            Taro.showToast({
+              title: "服务不可用，服务器暂时过载或维护。",
+              icon: "none",
+            });
+            reject(new Error(res.data));
+            break;
+          default:
+            reject(error);
+        }
+      } catch (error) {
+        Taro.hideNavigationBarLoading();
+        reject(new Error("网络请求出错"));
+      }
+    });
+  }
 
-export function get(url, data = '') {
-  let option = { url, data }
-  return request(option)
-}
+  get(url, data) {
+    return this.commonHttp("GET", url, data);
+  }
 
-export const post = (url, data, contentType) => {
-  let params = { url, data, contentType }
-  return request(params, 'POST')
+  post(url, data) {
+    return this.commonHttp("POST", url, data);
+  }
+
+  delete(url, data) {
+    return this.commonHttp("DELETE", url, data);
+  }
+
+  put(url, data) {
+    return this.commonHttp("PUT", url, data);
+  }
 }

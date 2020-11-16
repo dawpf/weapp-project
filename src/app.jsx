@@ -10,8 +10,15 @@ const store = configStore()
 
 class App extends Component {
 
+  state = {
+    data_app: 'app里面的数据'
+  }
+
   componentDidMount() {
     console.log('Taro.ENV_TYPE', Taro.ENV_TYPE);
+    console.log('process', process);
+    console.log('Taro.getEnv() ', Taro.getEnv());
+
   }
 
   componentDidShow() { }

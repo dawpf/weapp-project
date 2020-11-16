@@ -3,7 +3,7 @@ import Taro from "@tarojs/taro";
 import React, { Component } from 'react'
 import { View, Image, Text, Block } from "@tarojs/components";
 import classNames from "classnames";
-import { getStatusBarHeight, getTitleBarHeight, objectToString } from "../../utils/style";
+import { getStatusBarHeight, getTitleBarHeight, objectToString } from "@/utils/style";
 
 // 图片资源
 import backBlackIcon from "./assets/ic-back-black.svg";
@@ -17,10 +17,7 @@ const HomePage = '/pages/home/index';
 
 export default class NavBar extends Component {
 
-  componentDidMount() {
-    console.log('getTitleBarHeight()', getTitleBarHeight());
-    console.log('getStatusBarHeight()', getStatusBarHeight());
-  }
+  componentDidMount() { }
 
   onClickBackIcon() {
     const { beforeBackCheck } = this.props;
