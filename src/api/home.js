@@ -20,3 +20,10 @@ export function getSearch(params) {
   return request.get(Service.search, params);
 }
 
+/**
+ * uu数据获取
+ * @param {*} params
+ */
+export function postUU(params) {
+  return request.post(Service.bookStore, params);
+}

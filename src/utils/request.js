@@ -1,15 +1,16 @@
 import Taro from "@tarojs/taro";
 import { base } from "@/utils/index";
 
-const HOSTNAME = 'http://restapi.amap.com';
+// const HOSTNAME = 'http://restapi.amap.com';
+const HOSTNAME = 'https://uukankan.com';
 
 const request = async obj => {
   const { method, url } = obj;
   let { data } = obj;
-  const token = '123456789'
+  // const token = '123456789'
 
   const header = {
-    Authorization: `Bearer ${token}`,
+    // Authorization: `Bearer ${token}`,
   };
 
   const option = {

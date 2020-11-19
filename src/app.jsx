@@ -15,10 +15,9 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.log('Taro.ENV_TYPE', Taro.ENV_TYPE);
-    console.log('process', process);
-    console.log('Taro.getEnv() ', Taro.getEnv());
-
+    // console.log('Taro.ENV_TYPE', Taro.ENV_TYPE);
+    // console.log('process', process);
+    // console.log('Taro.getEnv() ', Taro.getEnv());
   }
 
   componentDidShow() { }

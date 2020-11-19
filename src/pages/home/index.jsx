@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { View, Button } from '@tarojs/components'
 import { add } from '@/actions/home'
 
-import { getAdministrative_division, getSearch } from "../../api/home";
+import { getAdministrative_division, getSearch, postUU } from "../../api/home";
 
 import NavBar from '../../components/nav-bar/index'
 
@@ -25,19 +25,37 @@ class Home extends React.Component {
 
   async componentDidMount() {
     try {
-      const payLoad1 = {
-        key: "5551f26eca926b51ac0d81d3ead186d1"
+      // const payLoad1 = {
+      //   key: "5551f26eca926b51ac0d81d3ead186d1"
+      // }
+      // const payLoad2 = {
+      //   key: "5551f26eca926b51ac0d81d3ead186d1",
+      //   keywords: '招商银行',
+      //   city: '上海'
+      // }
+      // await getAdministrative_division(payLoad1)
+      // const res = await getSearch(payLoad2)
+      // this.setState({
+      //   cityData: res.pois
+      // })
+
+      const payLoad3 = {
+        appId: "",
+        channel_id: 4,
+        marketChannel: "",
+        osType: "1",
+        packageName: "",
+        phoneModel: "",
+        product: "2",
+        sign: "56fc955a6acf60c8755ca0c2b1250e63",
+        sysVer: "",
+        time: "1605524791",
+        token: "5783a6ead5c99b2907bf8b84a1c5a166",
+        udid: "",
+        ver: "3.1.0"
       }
-      const payLoad2 = {
-        key: "5551f26eca926b51ac0d81d3ead186d1",
-        keywords: '招商银行',
-        city: '上海'
-      }
-      await getAdministrative_division(payLoad1)
-      const res = await getSearch(payLoad2)
-      this.setState({
-        cityData: res.pois
-      })
+
+      await postUU(payLoad3)
 
     } catch (error) {
       console.log(error);
